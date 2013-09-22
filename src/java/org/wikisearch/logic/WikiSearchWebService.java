@@ -4,6 +4,7 @@
  */
 package org.wikisearch.logic;
 
+import java.util.ArrayList;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -19,7 +20,7 @@ public class WikiSearchWebService {
      * This is a sample web service operation
      */
     @WebMethod(operationName = "doSearch")
-    public String doSearch(@WebParam(name = "keyword") String keyword) {
+    public ArrayList<String> doSearch(@WebParam(name = "keyword") String keyword) {
         return WikiSearch.doSearch(keyword);
     }
 }

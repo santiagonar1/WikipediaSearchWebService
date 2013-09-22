@@ -2,6 +2,7 @@ package org.wikisearch.logic;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,10 +37,10 @@ public class WikiSearch {
      * @param keyword
      * @return A list of results
      */
-    public static String doSearch(String keyword) {
+    public static ArrayList<String> doSearch(String keyword) {
         HttpClient client = new DefaultHttpClient();
         String responseBody = null;
-        
+
         //%20 es el equivalente de espacio en url (tambien puede ir un signo +)
         keyword = keyword.replaceAll(" ", "%20");
         HttpGet request = new HttpGet(url + "action=query&list=search&srwhat=text&format=" + responseFormat + "&srsearch=" + keyword);
@@ -62,11 +63,16 @@ public class WikiSearch {
         return "";
     }
 
-    public static String processXML(String xml) {
+    /**
+     * Funcion que procesa el xml y forma un array de tipo [titulo, resumen]
+     * 
+     * @param xml
+     * @return ArrayList<String> de resultados [titulo, resumen]
+     */
+    public static ArrayList<String> processXML(String xml) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db;
-        String title = null;
-        String resume = null;
+        ArrayList<String> result = new ArrayList<String>();
         Random rand = new Random();
         int value = rand.nextInt(3);
 
@@ -81,11 +87,18 @@ public class WikiSearch {
             NodeList search = e.getElementsByTagName("search");
             Element e1 = (Element) search.item(0);
             NodeList ps = e1.getElementsByTagName("p");
-            Element e2 = (Element) ps.item(value);
-            title = e2.getAttribute("title");
-            resume = e2.getAttribute("snippet");
-            resume = resume.replaceAll("\\<.*?>", "");
-            resume = resume.replaceAll("&.*?;", "");
+
+            for (int i = 0; i < ps.getLength(); i++) {
+                String title = null;
+                String resume = null;
+                Element e2 = (Element) ps.item(i);
+                title = e2.getAttribute("title");
+                resume = e2.getAttribute("snippet");
+                resume = resume.replaceAll("\\<.*?>", "");
+                resume = resume.replaceAll("&.*?;", "");
+                result.add(title);
+                result.add(resume);
+            }
         } catch (SAXException ex) {
             Logger.getLogger(WikiSearch.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -94,7 +107,6 @@ public class WikiSearch {
             Logger.getLogger(WikiSearch.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return title + " " + resume;
+        return result;
     }
-    
 }
