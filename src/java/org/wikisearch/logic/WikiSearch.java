@@ -54,7 +54,8 @@ public class WikiSearch {
     }
 
     /**
-     * Esta funcion procesa una respuesta en formato JSON
+     * Esta funcion procesa una respuesta en formato JSON. Por el momento no esta
+     * implementada
      *
      * @param json
      * @return
@@ -64,7 +65,19 @@ public class WikiSearch {
     }
 
     /**
-     * Funcion que procesa el xml y forma un array de tipo [titulo, resumen]
+     * Funcion que procesa el xml y forma un array de tipo [titulo, resumen].
+     * 
+     * Wikipedia responde con un formato xml estructurado así (caso exitoso):
+     * 
+     *         ---> query-continue --> search   (# de resultados mostrados, sroffset)
+     *       / 
+     * api --
+     *       \               --> search-info    (# total de resultados, totalhits)
+     *         ---> query --|
+     *                       --> search --> p   (Resultados, ej: se muestran 10 p)
+     *                                  --> p
+     *                                      ...
+     *                                  --> p
      * 
      * @param xml
      * @return ArrayList<String> de resultados [titulo, resumen]
